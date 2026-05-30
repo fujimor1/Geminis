@@ -76,7 +76,7 @@ html,body{background:#0c0600;color:#f0e6c8;font-family:'EB Garamond',serif;overf
       <canvas id="sc0" width="600" height="160"></canvas>
     </div>
     <div class="story-text" id="tx0"></div>
-    <button class="btn" id="btn0" style="display:none" onclick="nextSection(1)">Continuar ✦</button>
+    <button class="btn" id="btn0" style="display:none" onclick="startMusic();nextSection(1)">Continuar ✦</button>
   </div>
 
   <!-- ESCENA 1: CASTOR Y POLLUX -->
@@ -475,6 +475,44 @@ function showLetter(){
   document.querySelectorAll('.pd').forEach((d,i)=>d.classList.toggle('on',i===3));
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+// ---- MÚSICA AMBIENTAL ----
+const bgAudio=document.createElement('audio');
+bgAudio.src='musica.mp3';
+bgAudio.loop=true;
+bgAudio.volume=0;
+document.body.appendChild(bgAudio);
+
+let musicStarted=false;
+function startMusic(){
+  if(musicStarted)return;
+  musicStarted=true;
+  bgAudio.play().then(()=>{
+    let v=0;
+    const fade=setInterval(()=>{
+      v=Math.min(v+.03,.38);
+      bgAudio.volume=v;
+      if(v>=.38)clearInterval(fade);
+    },120);
+  }).catch(()=>{});
+
+  const muteBtn=document.createElement('button');
+  muteBtn.textContent='♪';
+  muteBtn.title='Silenciar / activar música';
+  muteBtn.style.cssText='position:fixed;bottom:1.1rem;right:1.2rem;z-index:300;background:transparent;border:1px solid rgba(180,140,60,.3);color:rgba(210,175,80,.6);font-size:.85rem;padding:5px 10px;cursor:pointer;font-family:serif;transition:all .3s;border-radius:2px';
+  muteBtn.addEventListener('mouseenter',()=>muteBtn.style.borderColor='rgba(210,175,80,.6)');
+  muteBtn.addEventListener('mouseleave',()=>muteBtn.style.borderColor='rgba(180,140,60,.3)');
+  let muted=false;
+  muteBtn.addEventListener('click',()=>{
+    muted=!muted;
+    bgAudio.volume=muted?0:.38;
+    muteBtn.textContent=muted?'♩':'♪';
+  });
+  document.body.appendChild(muteBtn);
+}
+
+
+
 </script>
 </body>
 </html>
