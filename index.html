@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Para Meredith ✦</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=EB+Garamond:ital,wght@0,400;1,400&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0c0600;color:#f0e6c8;font-family:'EB Garamond',serif;overflow-x:hidden;min-height:100vh}
+
+#bgc{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#flycanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200;pointer-events:none;display:none}
+
+.wrap{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:0 1.5rem 6rem}
+
+.scene-wrap{width:100%;max-width:600px;margin:0 auto;position:relative}
+.scene-wrap canvas{display:block;width:100%;border-radius:2px}
+
+.story-text{max-width:520px;width:100%;margin:0 auto;padding:1.6rem 0 .6rem;min-height:5.5rem;font-size:1.08rem;line-height:2;color:rgba(240,228,195,.88);font-style:italic;text-align:center;letter-spacing:.3px}
+
+.story-title{font-family:'Cinzel',serif;font-size:clamp(1.5rem,5vw,2.4rem);font-weight:400;color:rgba(210,175,100,.9);letter-spacing:4px;text-align:center;padding:3rem 0 .4rem;text-shadow:0 0 30px rgba(180,130,40,.25)}
+
+.divider{width:120px;height:1px;background:linear-gradient(90deg,transparent,rgba(180,140,60,.4),transparent);margin:.8rem auto 1.6rem}
+
+.btn{background:transparent;border:1px solid rgba(180,140,60,.35);color:rgba(210,175,100,.8);padding:11px 34px;font-family:'EB Garamond',serif;font-size:1rem;letter-spacing:3px;cursor:pointer;transition:all .35s;margin-top:1rem}
+.btn:hover{border-color:rgba(210,175,100,.7);color:rgba(235,200,130,.95)}
+
+.mbox{background:rgba(8,4,0,.7);border:1px solid rgba(180,140,60,.25);border-radius:2px;padding:1.6rem 2rem;max-width:440px;width:100%;margin:1.2rem auto .8rem;position:relative}
+.mbox::before{content:'';position:absolute;top:-1px;left:20%;right:20%;height:1px;background:linear-gradient(90deg,transparent,rgba(180,140,60,.5),rgba(210,175,100,.5),rgba(180,140,60,.5),transparent)}
+.mlabel{font-size:.72rem;letter-spacing:4px;color:rgba(180,140,60,.55);text-transform:uppercase;margin-bottom:.8rem;font-family:'Cinzel',serif}
+.minput{width:100%;background:transparent;border:none;border-bottom:1px solid rgba(180,140,60,.3);color:rgba(240,228,195,.9);padding:9px 4px;font-family:'EB Garamond',serif;font-size:1.1rem;outline:none;text-align:center;letter-spacing:1px}
+.minput:focus{border-bottom-color:rgba(210,175,100,.7)}
+.minput::placeholder{color:rgba(180,140,60,.35);font-style:italic}
+.mhint{font-size:.75rem;color:rgba(180,140,60,.38);margin-top:.5rem;letter-spacing:1px;font-family:'Cinzel',serif}
+
+.conf{display:none;text-align:center;max-width:420px;margin:1.2rem auto 0}
+.conf-stars{font-size:1.1rem;letter-spacing:10px;color:rgba(210,175,100,.65);margin-bottom:.9rem}
+.conf-title{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:3px;color:rgba(210,175,100,.85);margin-bottom:.5rem}
+.conf-sub{font-size:.95rem;color:rgba(200,175,140,.55);line-height:1.8;font-style:italic;margin-bottom:1.4rem}
+
+.lcard{background:rgba(8,4,0,.82);border:1px solid rgba(180,140,60,.22);border-radius:2px;padding:2.8rem 3rem;max-width:560px;width:100%;margin:0 auto;position:relative}
+.lcard::before{content:'';position:absolute;top:-1px;left:15%;right:15%;height:1px;background:linear-gradient(90deg,transparent,rgba(180,140,60,.5),rgba(210,175,100,.5),rgba(180,140,60,.5),transparent)}
+.ldate{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:3px;color:rgba(180,140,60,.5);text-transform:uppercase;margin-bottom:1.6rem}
+.lbody{font-size:1rem;line-height:2.05;color:rgba(235,218,190,.84)}
+.lbody p{margin-bottom:1rem}
+.hl{color:rgba(210,175,100,.9)}
+.lsign{margin-top:1.6rem;font-style:italic;color:rgba(180,140,60,.6);font-size:.95rem;text-align:right}
+
+.pdots{display:flex;gap:8px;justify-content:center;position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);z-index:50}
+.pd{width:5px;height:5px;border-radius:50%;background:rgba(180,140,60,.2);border:1px solid rgba(180,140,60,.35);transition:all .3s}
+.pd.on{background:rgba(210,175,100,.7);box-shadow:0 0 6px rgba(180,140,60,.5)}
+
+@media(max-width:480px){.lcard{padding:1.8rem 1.4rem}}
+</style>
+</head>
+<body>
+
+<canvas id="bgc"></canvas>
+<canvas id="flycanvas"></canvas>
+
+<div class="pdots">
+  <div class="pd on" id="pd0"></div>
+  <div class="pd" id="pd1"></div>
+  <div class="pd" id="pd2"></div>
+  <div class="pd" id="pd3"></div>
+</div>
+
+<div class="wrap" id="mainwrap">
+
+  <!-- ESCENA 0: INTRO -->
+  <div id="sec0">
+    <div class="story-title">Los gemelos del cielo</div>
+    <div class="divider"></div>
+    <div class="scene-wrap" style="margin-bottom:.4rem">
+      <canvas id="sc0" width="600" height="160"></canvas>
+    </div>
+    <div class="story-text" id="tx0"></div>
+    <button class="btn" id="btn0" style="display:none" onclick="nextSection(1)">Continuar ✦</button>
+  </div>
+
+  <!-- ESCENA 1: CASTOR Y POLLUX -->
+  <div id="sec1" style="display:none">
+    <div class="scene-wrap" style="margin-bottom:.4rem;margin-top:2rem">
+      <canvas id="sc1" width="600" height="220"></canvas>
+    </div>
+    <div class="story-text" id="tx1"></div>
+    <button class="btn" id="btn1" style="display:none" onclick="nextSection(2)">Continuar ✦</button>
+  </div>
+
+  <!-- ESCENA 2: EL CAMINO -->
+  <div id="sec2" style="display:none">
+    <div class="scene-wrap" style="margin-bottom:.4rem;margin-top:2rem">
+      <canvas id="sc2" width="600" height="220"></canvas>
+    </div>
+    <div class="story-text" id="tx2"></div>
+    <button class="btn" id="btn2" style="display:none" onclick="nextSection(3)">Continuar ✦</button>
+  </div>
+
+  <!-- ESCENA 3: MANIFESTACIÓN -->
+  <div id="sec3" style="display:none">
+    <div class="scene-wrap" style="margin-bottom:.4rem;margin-top:2rem">
+      <canvas id="sc3" width="600" height="180"></canvas>
+    </div>
+    <div class="story-text" id="tx3"></div>
+    <div class="mbox" id="mform" style="display:none">
+      <div class="mlabel">Tu intención para el cosmos</div>
+      <input class="minput" id="winput" type="text" placeholder="escribe tu deseo aquí..." maxlength="90">
+      <div class="mhint">presiona Enter o el botón para enviarlo</div>
+    </div>
+    <button class="btn" id="sendbtn" style="display:none" onclick="launchWish()">Enviar al cosmos ✦</button>
+    <div class="conf" id="confbox">
+      <div class="conf-stars" id="cstars"></div>
+      <div class="conf-title" id="ctitle" style="display:none">Tu deseo viaja entre los astros</div>
+      <div class="conf-sub" id="csub" style="display:none">Los dioses de Géminis lo recibieron. Lo que escribiste ya forma parte del cosmos, esperando el momento exacto para volverse real.</div>
+      <button class="btn" id="btnletter" style="display:none" onclick="showLetter()">Leer tu carta →</button>
+    </div>
+  </div>
+
+  <!-- CARTA -->
+  <div id="sec4" style="display:none;margin-top:3rem;width:100%;max-width:600px">
+    <div style="font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:5px;color:rgba(180,140,60,.45);text-transform:uppercase;text-align:center;margin-bottom:1.2rem">Para Meredith, con todo ✦</div>
+    <div class="lcard">
+      <div class="ldate">✦ &nbsp; Feliz cumpleaños &nbsp; ✦</div>
+      <div class="lbody">
+        <p>Hola, Meredith.</p>
+        <p>Sé que hoy es un día especial. Y aunque quizás ya hayas celebrado tu cumpleaños antes, eso no le quita ni un gramo de lo especial que es.</p>
+        <p>Quería desearte <span class="hl">la mejor de las suertes</span> para todo lo que resta del año. Quizás en este momento no estás exactamente donde quisieras estar, pero solo me queda decirte que confíes en el proceso. Al final, todo termina saliendo bien, porque tú sí que te esfuerzas — y los esfuerzos siempre son recompensados.</p>
+        <p>Sé que a veces te bajoneas, que dudas de ti misma, como ese síndrome que me comentabas el otro día 😄. Pero ante todo tienes que seguir adelante, no importa lo que digan los demás sobre lo que haces. Que te resbale todo. <span class="hl">Yo creo en ti</span>, y creo que vas a poder lograr todo lo que te propongas.</p>
+        <p>Y que no se me olvide: eres una gran persona y amiga. Aunque sea de manera virtual, estoy seguro de que también lo eres en persona. Casi nunca lo digo, pero eres alguien muy buena que, sin necesitar nada a cambio, siempre está ahí para ayudar.</p>
+        <p>Aún conservo algo de lo tarado que era antes, pero aun así te agradezco mucho por haberte quedado y no haberte ido.</p>
+        <p><span class="hl">Te quiero mucho, y gracias por todo.</span></p>
+      </div>
+      <div class="lsign">Con cariño ✦</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---- FONDO NOCTURNO ANTIGUO ----
+const bgc=document.getElementById('bgc');
+const bgx=bgc.getContext('2d');
+let BW,BH,bt=0;
+const bstars=Array.from({length:200},()=>({
+  x:Math.random(),y:Math.random(),
+  r:Math.random()*.9+.12,
+  a:Math.random()*.55+.1,
+  sp:Math.random()*.003+.0015,
+  ph:Math.random()*Math.PI*2
+}));
+function rsz(){BW=bgc.width=innerWidth;BH=bgc.height=innerHeight}
+rsz();addEventListener('resize',rsz);
+(function bloop(){
+  bgx.clearRect(0,0,BW,BH);
+  // Cielo nocturno cálido antiguo
+  bgx.fillStyle='#0c0600';bgx.fillRect(0,0,BW,BH);
+  // nebulosas cálidas
+  [{x:.1,y:.2,r:220,c:'rgba(80,40,5,.08)'},{x:.9,y:.3,r:180,c:'rgba(60,20,0,.07)'},{x:.5,y:.6,r:280,c:'rgba(40,15,0,.05)'}].forEach(n=>{
+    let g=bgx.createRadialGradient(n.x*BW,n.y*BH,0,n.x*BW,n.y*BH,n.r);
+    g.addColorStop(0,n.c);g.addColorStop(1,'transparent');
+    bgx.fillStyle=g;bgx.beginPath();bgx.arc(n.x*BW,n.y*BH,n.r,0,Math.PI*2);bgx.fill();
+  });
+  bstars.forEach(s=>{
+    let al=.06+.6*(0.5+0.5*Math.sin(bt*s.sp*60+s.ph));
+    bgx.beginPath();bgx.arc(s.x*BW,s.y*BH,s.r,0,Math.PI*2);
+    bgx.fillStyle=`rgba(240,220,170,${al*s.a})`;bgx.fill();
+  });
+  bt+=.016;requestAnimationFrame(bloop);
+})();
+
+// ---- HELPERS ----
+const rafMap={};
+function cancelS(id){if(rafMap[id]){cancelAnimationFrame(rafMap[id]);delete rafMap[id];}}
+
+function starsOnCanvas(cx,w,h,n){
+  for(let i=0;i<n;i++){
+    cx.beginPath();cx.arc(Math.random()*w,Math.random()*(h*.75),Math.random()*.65+.08,0,Math.PI*2);
+    cx.fillStyle=`rgba(240,215,160,${Math.random()*.22+.04})`;cx.fill();
+  }
+}
+
+// Dibujar luna antigua
+function moon(cx,x,y,r){
+  cx.fillStyle='rgba(240,210,120,.18)';cx.beginPath();cx.arc(x,y,r+10,0,Math.PI*2);cx.fill();
+  cx.fillStyle='rgba(240,215,140,.55)';cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);cx.fill();
+  cx.fillStyle='rgba(200,170,80,.15)';cx.beginPath();cx.arc(x+r*.25,y-r*.1,r*.75,0,Math.PI*2);cx.fill();
+}
+
+// Personita estilo antiguo (toga/silueta)
+function figure(cx,x,y,col,flip,walk){
+  cx.save();cx.strokeStyle=col;cx.fillStyle=col;cx.lineWidth=1.5;cx.lineCap='round';cx.lineJoin='round';
+  const f=flip?-1:1;const w=walk||0;
+  // cabeza
+  cx.beginPath();cx.arc(x,y-14,5,0,Math.PI*2);cx.fill();
+  // cuerpo / toga triangular
+  cx.beginPath();cx.moveTo(x-f*3,y-9);cx.lineTo(x+f*5,y+4);cx.lineTo(x-f*5,y+4);cx.closePath();cx.fill();
+  // brazo
+  cx.beginPath();cx.moveTo(x,y-5);cx.lineTo(x+f*8,y-2+Math.sin(w)*2);cx.stroke();
+  // piernas con paso
+  cx.beginPath();cx.moveTo(x,y+4);cx.lineTo(x-f*4+Math.sin(w)*4,y+16);cx.stroke();
+  cx.beginPath();cx.moveTo(x,y+4);cx.lineTo(x+f*4+Math.sin(w+Math.PI)*4,y+16);cx.stroke();
+  cx.restore();
+}
+
+// Terreno antiguo: tierra y columnas
+function ancientGround(cx,w,h,cols){
+  cx.fillStyle='rgba(90,55,15,.35)';cx.fillRect(0,h-38,w,38);
+  cx.fillStyle='rgba(60,35,5,.45)';cx.fillRect(0,h-22,w,22);
+  cx.strokeStyle='rgba(130,90,30,.2)';cx.lineWidth=.5;
+  cx.beginPath();cx.moveTo(0,h-38);cx.lineTo(w,h-38);cx.stroke();
+  if(cols){
+    cols.forEach(cx2=>{
+      cx.fillStyle='rgba(160,120,60,.28)';
+      cx.fillRect(cx2-5,h-110,10,72);
+      cx.fillRect(cx2-8,h-115,16,8);
+      cx.fillRect(cx2-8,h-38,16,5);
+    });
+  }
+}
+
+// ---- TYPEWRITER ----
+function typewrite(elId,text,delay,onDone){
+  const el=document.getElementById(elId);
+  el.textContent='';
+  let i=0;
+  function next(){
+    if(i<text.length){el.textContent+=text[i++];setTimeout(next,delay);}
+    else if(onDone)setTimeout(onDone,400);
+  }
+  next();
+}
+
+// ---- NAVEGACIÓN ----
+let curSec=0;
+function nextSection(n){
+  document.getElementById('sec'+(n-1)).style.display='none';
+  cancelS(n-1);
+  document.getElementById('sec'+n).style.display='block';
+  document.querySelectorAll('.pd').forEach((d,i)=>d.classList.toggle('on',i===n));
+  curSec=n;
+  if(n===1)startSec1();
+  if(n===2)startSec2();
+  if(n===3)startSec3();
+}
+
+// ---- SECCIÓN 0: INTRO ----
+(function initSec0(){
+  const cv=document.getElementById('sc0'),cx=cv.getContext('2d');
+  cv.width=600;cv.height=160;
+  cx.fillStyle='#100800';cx.fillRect(0,0,600,160);
+  starsOnCanvas(cx,600,160,80);
+  moon(cx,300,65,22);
+  cx.font='bold 36px serif';cx.textAlign='center';cx.textBaseline='middle';
+  cx.fillStyle='rgba(220,185,90,.75)';cx.fillText('♊',300,65);
+  ancientGround(cx,600,160,null);
+
+  const txt="Antes de que Géminis fuera un signo en el cielo, fue una historia. Una historia de dos hermanos que amaron tan profundo que los dioses tuvieron que inmortalizarlos entre las estrellas.";
+  typewrite('tx0',txt,38,()=>{document.getElementById('btn0').style.display='inline-block';});
+})();
+
+// ---- SECCIÓN 1: CÁSTOR Y PÓLUX JUNTOS ----
+function startSec1(){
+  const cv=document.getElementById('sc1'),cx=cv.getContext('2d');
+  cv.width=600;cv.height=220;
+  let x1=20,x2=580,t=0,phase='approach';
+
+  function draw(){
+    cx.fillStyle='#0e0700';cx.fillRect(0,0,600,220);
+    starsOnCanvas(cx,600,220,50);
+    moon(cx,300,45,18);
+    // ciudad espartana al fondo
+    [60,130,210,310,390,470,530].forEach((bx,i)=>{
+      const bh=35+[20,40,28,50,30,42,22][i];
+      cx.fillStyle=`rgba(${90+i*5},${55+i*3},${15+i*2},.32)`;
+      cx.fillRect(bx,180-bh,18,bh);
+      cx.fillStyle='rgba(120,80,25,.15)';cx.fillRect(bx-3,180-bh-6,24,8);
+    });
+    ancientGround(cx,600,220,[120,300,480]);
+    t+=.04;
+    const walk=Math.sin(t*3)*.9;
+    figure(cx,Math.min(x1,270),180,'rgba(210,165,80,.9)',false,walk);
+    figure(cx,Math.max(x2,330),180,'rgba(190,140,220,.85)',true,walk);
+    if(phase==='approach'){x1+=.7;x2-=.7;if(x1>=270)phase='done';}
+    rafMap[1]=requestAnimationFrame(draw);
+  }
+
+  draw();
+  const txt="Cástor era mortal, valiente como ninguno, domador de caballos. Pólux era inmortal, hijo de Zeus, el más fuerte de los hombres. Eran opuestos — pero ninguno era completo sin el otro.";
+  typewrite('tx1',txt,42,()=>{cancelS(1);document.getElementById('btn1').style.display='inline-block';});
+}
+
+// ---- SECCIÓN 2: EL CAMINO ----
+function startSec2(){
+  const cv=document.getElementById('sc2'),cx=cv.getContext('2d');
+  cv.width=600;cv.height=220;
+  let px=20,t=0;
+  const stops=[
+    {x:80,icon:'⚓',lbl:'el mar'},
+    {x:190,icon:'🌋',lbl:'las montañas'},
+    {x:300,icon:'🏺',lbl:'el oráculo'},
+    {x:410,icon:'⚡',lbl:'el Olimpo'},
+    {x:520,icon:'✦',lbl:'los astros'}
+  ];
+
+  function draw(){
+    cx.fillStyle='#0e0700';cx.fillRect(0,0,600,220);
+    starsOnCanvas(cx,600,220,45);
+    moon(cx,560,35,14);
+    stops.forEach((s,i)=>{
+      const passed=px>=s.x-8;
+      cx.beginPath();cx.arc(s.x,174,6,0,Math.PI*2);
+      cx.fillStyle=passed?'rgba(210,175,90,.5)':'rgba(120,80,20,.2)';cx.fill();
+      cx.strokeStyle=passed?'rgba(210,175,90,.4)':'rgba(120,80,20,.15)';cx.lineWidth=.5;cx.stroke();
+      if(i>0){
+        cx.strokeStyle='rgba(150,100,30,.18)';cx.lineWidth=.5;cx.setLineDash([3,5]);
+        cx.beginPath();cx.moveTo(stops[i-1].x,174);cx.lineTo(s.x,174);cx.stroke();cx.setLineDash([]);
+      }
+      cx.font='14px serif';cx.textAlign='center';cx.fillText(s.icon,s.x,163);
+      cx.font='8px EB Garamond,serif';cx.fillStyle='rgba(180,140,50,.4)';cx.fillText(s.lbl,s.x,188);
+    });
+    ancientGround(cx,600,220,[150,380]);
+    t+=.04;
+    if(px<540)px+=.65;
+    figure(cx,Math.min(px,540),174,'rgba(220,185,90,.9)',false,Math.sin(t*3)*.9);
+    rafMap[2]=requestAnimationFrame(draw);
+  }
+
+  draw();
+  const txt="Juntos navegaron mares bravíos, escalaron volcanes, consultaron oráculos y llegaron hasta el Olimpo. No había camino que los detuviera. Porque cuando dos mitades caminan juntas, el mundo entero se vuelve posible.";
+  typewrite('tx2',txt,42,()=>{cancelS(2);document.getElementById('btn2').style.display='inline-block';});
+}
+
+// ---- SECCIÓN 3: EL PORTAL ----
+function startSec3(){
+  const cv=document.getElementById('sc3'),cx=cv.getContext('2d');
+  cv.width=600;cv.height=180;
+  let px=20,t=0,arrived=false,portalPulse=0;
+
+  function draw(){
+    cx.fillStyle='#0e0700';cx.fillRect(0,0,600,180);
+    starsOnCanvas(cx,600,180,55);
+    moon(cx,80,38,14);
+    portalPulse+=.04;
+    const pr=45+Math.sin(portalPulse)*4;
+    // portal
+    const pg=cx.createRadialGradient(520,140,4,520,140,pr);
+    pg.addColorStop(0,'rgba(210,175,80,.28)');pg.addColorStop(.6,'rgba(160,100,20,.1)');pg.addColorStop(1,'transparent');
+    cx.fillStyle=pg;cx.beginPath();cx.arc(520,140,pr,0,Math.PI*2);cx.fill();
+    cx.strokeStyle='rgba(210,175,80,.35)';cx.lineWidth=.8;cx.setLineDash([4,5]);
+    cx.beginPath();cx.arc(520,140,36,0,Math.PI*2);cx.stroke();cx.setLineDash([]);
+    cx.font='bold 18px serif';cx.textAlign='center';cx.fillStyle='rgba(220,185,90,.72)';cx.fillText('♊',520,147);
+    ancientGround(cx,600,180,[200,400]);
+    t+=.04;
+    if(px<475&&!arrived){px+=.7;}else{arrived=true;}
+    figure(cx,Math.min(px,475),140,'rgba(220,180,80,.9)',false,arrived?0:Math.sin(t*3)*.9);
+    if(arrived){
+      cx.strokeStyle='rgba(210,175,80,.4)';cx.lineWidth=1;
+      cx.beginPath();cx.moveTo(480,138);cx.lineTo(515,140);cx.stroke();
+    }
+    rafMap[3]=requestAnimationFrame(draw);
+  }
+
+  draw();
+  const txt="Cuando Cástor murió, Pólux rogó a Zeus que le diera la mitad de su inmortalidad. Y así, Zeus los colocó juntos en el cielo para siempre — el signo de Géminis. Géminis no es, como muchos creen, la señal de alguien con dos caras. Es la imagen de dos partes que se complementan, que se necesitan, que juntas se vuelven eternas. Tú llevas esas dos mitades dentro. Solo tienes que encontrarlas, dejar que se reconozcan, y cuando lo hagan — tus días también se inmortalizarán, igual que ellos, entre las estrellas. Esta noche, el cielo te escucha. Dile lo que quieres que se cumpla.";
+  typewrite('tx3',txt,42,()=>{
+    document.getElementById('mform').style.display='block';
+    document.getElementById('sendbtn').style.display='inline-block';
+  });
+}
+
+// ---- INPUT ----
+document.addEventListener('DOMContentLoaded',()=>{
+  const wi=document.getElementById('winput');
+  if(wi)wi.addEventListener('keydown',e=>{if(e.key==='Enter')launchWish();});
+});
+document.getElementById('winput').addEventListener('keydown',e=>{if(e.key==='Enter')launchWish();});
+
+// ---- LANZAR DESEO ----
+function launchWish(){
+  const val=document.getElementById('winput').value.trim();
+  if(!val){document.getElementById('winput').style.borderBottomColor='rgba(210,175,80,.8)';return;}
+  document.getElementById('mform').style.display='none';
+  document.getElementById('sendbtn').style.display='none';
+
+  const fc=document.getElementById('flycanvas');
+  fc.width=innerWidth;fc.height=innerHeight;fc.style.display='block';
+  const fx=fc.getContext('2d');
+
+  let sy=innerHeight*.78,sx=innerWidth/2,vy=-2.0,vx=(Math.random()-.5)*.5;
+  let frame=0,reached=false;
+  const cols=['rgba(210,175,80,.9)','rgba(240,210,130,.8)','rgba(190,155,60,.7)','rgba(255,230,150,.9)'];
+  let sparks=[];
+  let glitters=[];
+
+  function anim(){
+    fx.clearRect(0,0,innerWidth,innerHeight);
+    frame++;
+    if(!reached){sy+=vy;sx+=vx;}
+
+    // texto flotando
+    if(frame<55){
+      fx.globalAlpha=Math.max(0,1-frame/48);
+      fx.font='italic 1rem EB Garamond,serif';fx.textAlign='center';fx.textBaseline='middle';
+      fx.fillStyle='rgba(220,185,90,.9)';
+      fx.fillText('\u201c'+val+'\u201d',innerWidth/2,innerHeight*.78-frame*1.5);
+      fx.globalAlpha=1;
+    }
+
+    // chispas mientras sube
+    if(!reached&&frame%9===0&&sparks.length<12){
+      sparks.push({x:sx,y:sy,vx:(Math.random()-.5)*1,vy:(Math.random()-.5)*1,r:1+Math.random()*1.2,c:cols[Math.floor(Math.random()*cols.length)],a:.85});
+    }
+    sparks.forEach((s,i)=>{s.x+=s.vx;s.y+=s.vy;s.a-=.055;if(s.a<=0){sparks.splice(i,1);return;}
+      fx.globalAlpha=s.a;fx.beginPath();fx.arc(s.x,s.y,s.r,0,Math.PI*2);fx.fillStyle=s.c;fx.fill();});
+
+    if(!reached){
+      // estrella principal
+      fx.globalAlpha=1;
+      fx.beginPath();fx.arc(sx,sy,3.5,0,Math.PI*2);fx.fillStyle='rgba(240,210,120,.95)';fx.fill();
+      fx.beginPath();fx.arc(sx,sy,7,0,Math.PI*2);fx.fillStyle='rgba(210,175,80,.15)';fx.fill();
+    }
+
+    fx.globalAlpha=1;
+
+    // llegó al cielo
+    if(sy<innerHeight*.12&&!reached){
+      reached=true;
+      // generar brillitos
+      for(let i=0;i<55;i++){
+        const a=Math.random()*Math.PI*2;const spd=1+Math.random()*2.5;
+        glitters.push({x:sx,y:sy,vx:Math.cos(a)*spd,vy:Math.sin(a)*spd,r:.8+Math.random()*2,c:cols[Math.floor(Math.random()*cols.length)],a:1,life:1,decay:.018+Math.random()*.014});
+      }
+    }
+
+    // brillitos
+    glitters.forEach((g,i)=>{
+      g.x+=g.vx;g.y+=g.vy;g.vy+=.015;g.life-=g.decay;g.a=g.life;
+      if(g.life<=0){glitters.splice(i,1);return;}
+      fx.globalAlpha=g.a;
+      fx.beginPath();fx.arc(g.x,g.y,g.r,0,Math.PI*2);fx.fillStyle=g.c;fx.fill();
+      // destellito en forma de cruz pequeña
+      if(g.r>1.4){
+        fx.strokeStyle=g.c;fx.lineWidth=.6;
+        fx.beginPath();fx.moveTo(g.x-g.r*1.6,g.y);fx.lineTo(g.x+g.r*1.6,g.y);fx.stroke();
+        fx.beginPath();fx.moveTo(g.x,g.y-g.r*1.6);fx.lineTo(g.x,g.y+g.r*1.6);fx.stroke();
+      }
+    });
+    fx.globalAlpha=1;
+
+    const done=reached&&glitters.length===0;
+    if(!done){requestAnimationFrame(anim);}
+    else{
+      fc.style.display='none';
+      const cb=document.getElementById('confbox');
+      cb.style.display='block';
+      let i=0;const ms=['✦','✦ ✦','✦ ✦ ✦'];
+      const iv=setInterval(()=>{
+        document.getElementById('cstars').textContent=ms[i++];
+        if(i>=ms.length){clearInterval(iv);
+          document.getElementById('ctitle').style.display='block';
+          document.getElementById('csub').style.display='block';
+          document.getElementById('btnletter').style.display='inline-block';
+        }
+      },450);
+    }
+  }
+  anim();
+}
+
+function showLetter(){
+  document.getElementById('sec3').style.display='none';
+  cancelS(3);
+  document.getElementById('sec4').style.display='block';
+  document.querySelectorAll('.pd').forEach((d,i)=>d.classList.toggle('on',i===3));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
